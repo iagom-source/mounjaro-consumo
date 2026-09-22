@@ -1,0 +1,8 @@
+# Arquivos temporários do sistema
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Power BI: arquivos temporários de cache (o .pbix em si deve ser versionado)
+*.pbix.bak
+~$*.pbix

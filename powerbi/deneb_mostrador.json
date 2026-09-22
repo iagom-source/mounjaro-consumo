@@ -1,0 +1,64 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Mostrador de dose: um risco por mes, comprimento = interesse de busca por Mounjaro. Clique em um risco para filtrar a pagina.",
+  "usermeta": {
+    "interactivity": {
+      "selection": true,
+      "tooltip": true,
+      "contextMenu": true
+    }
+  },
+  "data": { "name": "dataset" },
+  "width": 900,
+  "height": 900,
+  "padding": 8,
+  "background": "transparent",
+  "params": [
+    { "name": "select", "select": { "type": "point", "fields": ["data_id"] } }
+  ],
+  "transform": [
+    { "calculate": "-2.6179939 + 5.2359878 * (datum.Idx - 1) / 42", "as": "th" },
+    { "calculate": "datum.th + 0.055", "as": "th2" },
+    { "calculate": "197", "as": "r0" },
+    { "calculate": "197 + 22 + datum['Interesse Mounjaro'] / 94 * 206", "as": "r1" },
+    { "calculate": "datum.Idx >= 29 ? 'pos' : 'pre'", "as": "fase" }
+  ],
+  "layer": [
+    {
+      "mark": { "type": "arc", "cornerRadius": 2, "cursor": "pointer" },
+      "encoding": {
+        "theta": { "field": "th", "type": "quantitative", "scale": null },
+        "theta2": { "field": "th2" },
+        "radius": { "field": "r0", "type": "quantitative", "scale": null },
+        "radius2": { "field": "r1" },
+        "color": {
+          "field": "fase",
+          "type": "nominal",
+          "scale": { "domain": ["pre", "pos"], "range": ["#0C1424", "#E63E86"] },
+          "legend": null
+        },
+        "opacity": {
+          "condition": { "param": "select", "value": 1 },
+          "value": 0.25
+        },
+        "tooltip": [
+          { "field": "data_id", "type": "temporal", "timeUnit": "yearmonth", "title": "Mes", "format": "%b/%y" },
+          { "field": "Interesse Mounjaro", "type": "quantitative", "title": "Interesse (0 a 100)", "format": ".1f" }
+        ]
+      }
+    },
+    {
+      "transform": [{ "filter": "datum.Idx % 12 == 1" }],
+      "mark": { "type": "text", "fontSize": 22, "font": "Consolas", "color": "#8490A5" },
+      "encoding": {
+        "theta": { "field": "th", "type": "quantitative", "scale": null },
+        "radius": { "value": 154 },
+        "text": { "field": "ano", "type": "nominal" }
+      }
+    }
+  ],
+  "config": {
+    "view": { "stroke": null },
+    "font": "Segoe UI"
+  }
+}

@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depois da Caneta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#e9ecf0; --dot:#cfd5de; --surface:#f7f8fa; --ink:#0c1424; --ink2:#465269; --muted:#8490a5;
+  --line:#d3d9e2; --track:#dbe0e8; --signal:#e63e86; --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --shadow:0 1px 0 rgba(12,20,36,.04),0 12px 32px -18px rgba(12,20,36,.28);
+  --disp:'Big Shoulders Display','Bahnschrift','Arial Narrow',Impact,sans-serif;
+  --body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131b; --dot:#1b222e; --surface:#171c26; --ink:#f2f4f8; --ink2:#b4bccb; --muted:#7c8799;
+    --line:#2a3242; --track:#252d3b; --signal:#f0609f; --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --shadow:0 12px 32px -18px rgba(0,0,0,.7); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f131b; --dot:#1b222e; --surface:#171c26; --ink:#f2f4f8; --ink2:#b4bccb; --muted:#7c8799;
+  --line:#2a3242; --track:#252d3b; --signal:#f0609f; --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --shadow:0 12px 32px -18px rgba(0,0,0,.7); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background-color:var(--bg);background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);background-size:24px 24px;color:var(--ink);font:15px/1.55 var(--body);padding-inline:clamp(16px,4vw,40px);padding-block:clamp(24px,5vw,56px) 64px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(36px,6vw,72px)}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font:900 clamp(46px,10.5vw,132px)/.86 var(--disp);text-transform:uppercase;margin:14px 0 0;letter-spacing:-.005em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--signal)}
+.lede{max-width:58ch;color:var(--ink2);font-size:clamp(15px,1.6vw,18px);margin:18px 0 0}
+h2{font:800 clamp(26px,4vw,40px)/1 var(--disp);text-transform:uppercase;margin:6px 0 0;letter-spacing:.005em}
+.sub{color:var(--ink2);margin:8px 0 0;max-width:62ch}
+
+/* console */
+.console{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(16px,3vw,40px);align-items:center}
+.dialbox{position:relative;touch-action:none;user-select:none}
+.dialbox svg{width:100%;height:auto;display:block;overflow:visible;cursor:grab}
+.dialbox svg:active{cursor:grabbing}
+.dialbox:focus-visible{outline:2px solid var(--signal);outline-offset:6px;border-radius:12px}
+.tk{stroke-linecap:round;transition:stroke .18s}
+.dM{font:900 84px var(--disp);fill:var(--ink);text-anchor:middle;letter-spacing:.01em}
+.dL{font:500 11px var(--mono);fill:var(--muted);text-anchor:middle;letter-spacing:.12em}
+.dI{font:500 15px var(--mono);fill:var(--ink);text-anchor:middle}
+.dP{font:500 11px var(--mono);text-anchor:middle;letter-spacing:.12em}
+.yr{font:500 11px var(--mono);fill:var(--muted);text-anchor:middle}
+.lt{font:500 11px var(--mono);fill:var(--signal);letter-spacing:.08em}
+.hint{font:400 12px var(--mono);color:var(--muted);text-align:center;margin-top:4px}
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.story{font-size:clamp(16px,1.9vw,20px);line-height:1.4;min-height:5.6em;margin:0;text-wrap:pretty}
+.story b{font-weight:600}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 12px var(--mono);letter-spacing:.04em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible,.seg button:focus-visible,.tbl summary:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.btn.play{background:var(--ink);color:var(--bg);border-color:var(--ink);padding-inline:18px}
+.btn[aria-pressed="true"],.btn.on{border-color:var(--signal);box-shadow:inset 0 0 0 1px var(--signal)}
+.shelves{display:flex;flex-direction:column;gap:14px}
+.sh .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
+.sh .nm{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.sq{width:11px;height:11px;border-radius:3px;flex:none}
+.bdg{font:500 13px var(--mono);border:1px solid var(--line);border-radius:6px;padding:2px 8px;background:var(--surface);white-space:nowrap}
+.bar{position:relative;display:grid;grid-template-columns:repeat(40,1fr);gap:2px;height:30px}
+.bar i{background:var(--track);border-radius:2px;transition:background .12s,opacity .12s}
+.ghost{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px solid var(--ink);pointer-events:none}
+.ghost::after{content:'';position:absolute;top:-4px;left:-5px;border:4px solid transparent;border-top-color:var(--ink)}
+.sh .ft{display:flex;justify-content:space-between;font:400 11px var(--mono);color:var(--muted);margin-top:6px;gap:8px;flex-wrap:wrap}
+
+/* seções de gráfico */
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.seg button{font:500 12px var(--mono);color:var(--ink2);background:none;border:0;border-radius:999px;padding:7px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(14px,2.4vw,24px);box-shadow:var(--shadow);margin-top:18px}
+.host{position:relative;width:100%}
+.host svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+.host text{font:400 11px var(--mono);fill:var(--muted)}
+.host text.k{fill:var(--ink);font:500 12px var(--body)}
+.host text.lm{fill:var(--signal);font:500 10.5px var(--mono);letter-spacing:.06em}
+.tt{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:6px 9px;font:500 12px var(--mono);z-index:3;white-space:nowrap}
+.rlab{font:500 12px var(--mono);color:var(--ink2);margin-top:10px}
+.rlab b{color:var(--ink)}
+
+/* achados */
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.bt{border-top:3px solid var(--ink);padding-top:12px}
+.bt .n{font:900 clamp(48px,7vw,78px)/.9 var(--disp)}
+.bt .d{color:var(--ink2);font-size:14px;margin-top:6px}
+.bt .r{font:500 12px var(--mono);color:var(--muted);margin-top:6px}
+.notes{columns:2 320px;column-gap:32px;color:var(--ink2);margin-top:22px}
+.notes p{margin:0 0 10px;break-inside:avoid}
+.notes b{color:var(--ink)}
+.tbl summary{cursor:pointer;font:500 12px var(--mono);color:var(--ink2);letter-spacing:.06em;padding:6px 0}
+.tbl .sc{overflow-x:auto;max-height:340px;margin-top:8px;border:1px solid var(--line);border-radius:10px}
+.tbl table{border-collapse:collapse;width:100%;font:400 12px var(--mono);font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{position:sticky;top:0;background:var(--surface);color:var(--ink2);font-weight:500}
+footer{font:400 12px/1.7 var(--mono);color:var(--muted)}
+@media (max-width:860px){.console{grid-template-columns:1fr}.dM{font-size:80px}}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:pl 1.6s ease-out infinite}@keyframes pl{from{r:8;opacity:.7}to{r:22;opacity:0}}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Análise de dados públicos · IBGE PMC × Google Trends · jan/2023 – jul/2026</div>
+    <h1>O carrinho depois da <em>caneta</em></h1>
+    <p class="lede">O Mounjaro chegou às farmácias brasileiras em maio de 2025. Gire o mostrador e veja o que aconteceu com o volume de vendas do varejo de alimentos enquanto o interesse pela caneta crescia.</p>
+  </header>
+
+  <section class="console" aria-label="Painel interativo">
+    <div>
+      <div class="dialbox" id="dialbox" tabindex="0" role="slider" aria-label="Mês analisado" aria-valuemin="0" aria-valuemax="42">
+        <svg id="dial" viewBox="-70 -10 740 640" aria-hidden="true"></svg>
+      </div>
+      <div class="hint">Arraste o anel ou use as setas do teclado. O comprimento de cada risco é o interesse de busca por “Mounjaro”.</div>
+    </div>
+    <div class="panel">
+      <p class="story" id="story" aria-live="polite"></p>
+      <div class="ctrls" id="ctrls"></div>
+      <div class="shelves" id="shelves"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div>
+        <div class="eyebrow">Linha do tempo</div>
+        <h2>O ritmo do varejo</h2>
+        <p class="sub" id="tlSub"></p>
+      </div>
+      <div class="seg" id="tlSeg" role="group" aria-label="Métrica"></div>
+    </div>
+    <div class="card"><div class="host" id="tl"></div></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div>
+        <div class="eyebrow">Trilha</div>
+        <h2>Interesse × crescimento anual</h2>
+        <p class="sub">Cada ponto é um mês. A trilha segue o mostrador: quando o interesse pelo Mounjaro sobe, para onde vai o crescimento anual?</p>
+      </div>
+      <div class="seg" id="scSeg" role="group" aria-label="Categoria"></div>
+    </div>
+    <div class="card"><div class="host" id="sc"></div><div class="rlab" id="scR"></div></div>
+  </section>
+
+  <section>
+    <div class="eyebrow">O que os dados dizem</div>
+    <h2>Estável, não em queda</h2>
+    <div class="big" id="big"></div>
+    <div class="notes">
+      <p><b>Leitura.</b> Nos alimentos, o volume vinha crescendo e parou depois do lançamento. A correlação entre o interesse pela caneta e o crescimento anual é negativa nas três categorias.</p>
+      <p><b>Cautela.</b> São apenas 31 meses e séries mensais dependem do tempo. Juros, renda e inflação também esfriaram o varejo. É um sinal para investigar, não uma prova de causa.</p>
+      <p><b>Farmácia.</b> A categoria provavelmente inclui o próprio medicamento, por isso o crescimento dela não mede o efeito sobre o consumo de alimentos.</p>
+      <p><b>Interesse de busca</b> é só uma aproximação da adoção, porque as vendas mensais do Mounjaro não são públicas.</p>
+    </div>
+  </section>
+
+  <details class="tbl">
+    <summary>VER OS DADOS EM TABELA</summary>
+    <div class="sc"><table id="tbl"></table></div>
+  </details>
+
+  <footer>Fonte: IBGE, Pesquisa Mensal de Comércio (tabela 8882, índice de volume, 2022 = 100, sem ajuste sazonal) e Google Trends (Brasil, média mensal). Elaboração própria com SQL Server. Correlação temporal entre séries agregadas, não causalidade.</footer>
+</div>
+
+<script>
+const D = {"months":["202301","202302","202303","202304","202305","202306","202307","202308","202309","202310","202311","202312","202401","202402","202403","202404","202405","202406","202407","202408","202409","202410","202411","202412","202501","202502","202503","202504","202505","202506","202507","202508","202509","202510","202511","202512","202601","202602","202603","202604","202605","202606","202607"],"series":{"Supermercados":[96.58,93.02,101.72,103.95,98.53,99.43,103.35,104.72,105.35,104.85,107.76,129.2,102.92,102.28,111.34,102.83,109.59,103.52,107.33,112.48,106.68,111.31,114.46,128.79,106.46,102.37,110.04,111.12,110.54,103.89,108.24,112.19,106.15,111.76,114.66,130.45,109.32,104.37,111.01,112.05,110.15,106.1,111.34],"Alimentos, bebidas e fumo (total)":[96.3,92.73,101.63,103.2,98.68,99.56,103.17,104.49,104.74,104.47,107.13,128.22,102.15,101.43,110.42,101.89,108.78,103.15,106.55,111.28,105.47,110.4,112.93,127.21,104.99,101.14,108.95,109.38,109.37,102.92,107.08,110.72,104.81,110.43,112.99,128.88,107.87,103,109.91,110.38,108.98,105.12,110.13],"Farmácia e perfumaria":[95.23,90.63,108.52,96.75,109.75,104.46,105.34,106.51,103.51,105.5,111.36,117.53,101.97,100.67,113.03,107.72,116.77,112.69,114.41,115.42,112.69,114.76,117.25,120.48,107.81,104.07,115.58,109.94,123.36,115.22,119.21,118.49,118.49,122.08,126.04,128.81,113.32,106.21,123.93,114.86,126.41,122.29,124.84]},"mounjaro":[0.5,0.5,0.5,1,0.62,1,0.9,0.5,4,2.6,1.25,2.2,1.25,1.75,8.4,4.25,4.25,7.8,9.5,8.5,10.8,12.75,13.75,19.2,24.75,25.25,22,29,47.75,47.6,49.75,57,63.75,74.75,93.8,88.75,88.75,66.5,62,63,59.4,55.75,60.25],"caneta":[0.5,0.5,0.38,0.4,0.5,0.25,0.1,0.12,0.12,0.2,0.38,0.2,0.25,0.62,0.7,0.5,0.38,0.5,0.25,0.25,0.1,0.5,0.5,0.3,0.5,0.5,0.6,0.75,0.62,1.2,1.5,4.4,2,2.75,3,3,4,3.5,3.2,3.25,3.8,4.75,5.5]};
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const N=D.months.length, LAUNCH=D.months.indexOf('202505'), YOY0=12;
+const lab=i=>MES[+D.months[i].slice(4)-1]+'/'+D.months[i].slice(2,4);
+const f1=v=>v.toFixed(1).replace('.',','), f2=v=>(v<0?'−':'')+Math.abs(v).toFixed(2).replace('.',',');
+const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(1).replace('.',',')+'%';
+const arrow=v=>v>0.05?'▲':v<-0.05?'▼':'●';
+const CATS=[
+ {key:'Supermercados',short:'Supermercados',color:'var(--s1)'},
+ {key:'Alimentos, bebidas e fumo (total)',short:'Alimentos (total)',color:'var(--s2)'},
+ {key:'Farmácia e perfumaria',short:'Farmácia',color:'var(--s3)'}];
+function pearson(x,y){const n=x.length,mx=x.reduce((a,b)=>a+b)/n,my=y.reduce((a,b)=>a+b)/n;let a=0,b=0,c=0;for(let i=0;i<n;i++){const u=x[i]-mx,v=y[i]-my;a+=u*v;b+=u*u;c+=v*v}return a/Math.sqrt(b*c)}
+CATS.forEach(c=>{
+  c.raw=D.series[c.key];
+  c.yoy=c.raw.map((v,i)=>i>=YOY0?(v/c.raw[i-12]-1)*100:null);
+  c.ma=c.raw.map((v,i)=>i>=11?c.raw.slice(i-11,i+1).reduce((a,b)=>a+b,0)/12:null);
+  const b=D.months.indexOf('202504'); c.base=c.ma.map(v=>v==null?null:v/c.ma[b]*100);
+  const avg=(a,z)=>{let s=0;for(let i=a;i<=z;i++)s+=c.raw[i];return s/(z-a+1)};
+  const i24=D.months.indexOf('202405'); c.cmp=(avg(LAUNCH,LAUNCH+7)/avg(i24,i24+7)-1)*100;
+  c.r=pearson(D.mounjaro.slice(YOY0),c.yoy.slice(YOY0));
+});
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let pos=N-1, target=N-1, raf=0, playT=0, sel=0, tlMode='base';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- mostrador ---------- */
+const CX=300,CY=300,R0=150,A0=-150,SW=300,maxI=Math.max(...D.mounjaro);
+const ang=i=>A0+SW*i/(N-1);
+const P=(a,r)=>{const t=a*Math.PI/180;return[CX+r*Math.sin(t),CY-r*Math.cos(t)]};
+const tlen=i=>10+D.mounjaro[i]/maxI*92;
+(function buildDial(){
+  const [ax,ay]=P(A0,R0-10),[bx,by]=P(A0+SW,R0-10);
+  let g=`<path d="M${ax} ${ay}A${R0-10} ${R0-10} 0 1 1 ${bx} ${by}" fill="none" stroke="var(--track)" stroke-width="3"/>`;
+  for(let i=0;i<N;i++){
+    const [x1,y1]=P(ang(i),R0),[x2,y2]=P(ang(i),R0+tlen(i));
+    g+=`<line class="tk" data-i="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="5"/>`;
+    if(D.months[i].slice(4)==='01'){const [tx,ty]=P(ang(i),R0-34);g+=`<text class="yr" x="${tx}" y="${ty+4}">${D.months[i].slice(0,4)}</text>`}
+  }
+  const a=ang(LAUNCH),[l1x,l1y]=P(a,R0+tlen(LAUNCH)+8),[l2x,l2y]=P(a,292),[tx,ty]=P(a,300);
+  g+=`<line x1="${l1x}" y1="${l1y}" x2="${l2x}" y2="${l2y}" stroke="var(--signal)" stroke-width="1.5"/><text class="lt" x="${tx+4}" y="${ty}">MAI/25</text><text class="lt" x="${tx+4}" y="${ty+13}">LANÇAMENTO</text>`;
+  g+=`<circle id="knob" r="10" fill="var(--signal)" stroke="var(--bg)" stroke-width="3"/><circle id="kring" class="pulse" r="10" fill="none" stroke="var(--signal)" stroke-width="2"/>`;
+  g+=`<text class="dL" x="${CX}" y="238">MÊS ANALISADO</text><text class="dM" id="dM" x="${CX}" y="312">–</text><text class="dI" id="dI" x="${CX}" y="346"></text><text class="dP" id="dP" x="${CX}" y="374"></text>`;
+  $('dial').innerHTML=g;
+})();
+const ticks=[...document.querySelectorAll('.tk')];
+function idxFromEvent(e){
+  const svg=$('dial'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+  let a=Math.atan2(p.x-CX,-(p.y-CY))*180/Math.PI;
+  if(Math.abs(a)>-A0) a=a>0?-A0:A0;
+  return clamp(Math.round((a-A0)/SW*(N-1)),0,N-1);
+}
+let drag=false;
+$('dialbox').addEventListener('pointerdown',e=>{drag=true;$('dialbox').setPointerCapture(e.pointerId);stop();goTo(idxFromEvent(e),true)});
+$('dialbox').addEventListener('pointermove',e=>{if(drag)goTo(idxFromEvent(e),true)});
+$('dialbox').addEventListener('pointerup',()=>drag=false);
+$('dialbox').addEventListener('pointercancel',()=>drag=false);
+$('dialbox').addEventListener('keydown',e=>{
+  const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1,PageUp:6,PageDown:-6}[e.key];
+  if(k){e.preventDefault();stop();goTo(clamp(Math.round(target)+k,0,N-1))}
+  else if(e.key==='Home'){e.preventDefault();goTo(0)} else if(e.key==='End'){e.preventDefault();goTo(N-1)}
+  else if(e.key===' '){e.preventDefault();togglePlay()}
+});
+
+/* ---------- controles ---------- */
+const CH=[['jan/23 · início',0],['abr/25 · véspera',D.months.indexOf('202504')],['mai/25 · lançamento',LAUNCH],['jul/26 · hoje',N-1]];
+$('ctrls').innerHTML=`<button class="btn play" id="play" type="button">▶ Reproduzir</button>`+CH.map((c,j)=>`<button class="btn ch" type="button" data-j="${j}">${c[0]}</button>`).join('');
+$('play').onclick=togglePlay;
+document.querySelectorAll('.ch').forEach(b=>b.onclick=()=>{stop();goTo(CH[+b.dataset.j][1])});
+function stop(){if(playT){clearTimeout(playT);playT=0;$('play').innerHTML='▶ Reproduzir'}}
+function togglePlay(){
+  if(playT){stop();return}
+  if(Math.round(target)>=N-1) goTo(0,true);
+  $('play').innerHTML='❚❚ Pausar';
+  const tick=()=>{const n=Math.round(target)+1;if(n>N-1){stop();return}goTo(n);playT=setTimeout(tick,reduce?300:340)};
+  playT=setTimeout(tick,200);
+}
+function goTo(t,instant){target=t;if(instant||reduce){pos=t;render();return}if(!raf)raf=requestAnimationFrame(step)}
+function step(){
+  pos+=(target-pos)*0.28; if(Math.abs(target-pos)<0.02)pos=target;
+  render(); raf=(pos!==target)?requestAnimationFrame(step):0;
+}
+
+/* ---------- gôndolas ---------- */
+const lo=Math.floor((Math.min(...CATS.flatMap(c=>c.raw))-3)/10)*10, hi=Math.ceil((Math.max(...CATS.flatMap(c=>c.raw))+3)/10)*10, NB=40;
+$('shelves').innerHTML=CATS.map((c,j)=>`<div class="sh"><div class="hd"><span class="nm"><span class="sq" style="background:${c.color}"></span>${c.key}</span><span class="bdg" id="bd${j}"></span></div>
+ <div class="bar" id="br${j}">${'<i></i>'.repeat(NB)}<span class="ghost" id="gh${j}"></span></div>
+ <div class="ft"><span id="fa${j}"></span><span id="fb${j}"></span></div></div>`).join('');
+const bars=CATS.map((_,j)=>[...document.querySelectorAll('#br'+j+' i')]);
+
+/* ---------- render principal ---------- */
+function render(){
+  const i=clamp(Math.round(pos),0,N-1);
+  const a=ang(pos),[kx,ky]=P(a,R0-10);
+  const kn=$('knob'),kr=$('kring');kn.setAttribute('cx',kx);kn.setAttribute('cy',ky);kr.setAttribute('cx',kx);kr.setAttribute('cy',ky);
+  ticks.forEach((t,k)=>{t.setAttribute('stroke',k===i?'var(--signal)':k<i?'var(--ink)':'var(--track)');t.setAttribute('stroke-width',k===i?8:5)});
+  $('dM').textContent=lab(i).toUpperCase();
+  $('dI').textContent='interesse '+f1(D.mounjaro[i])+' / 100';
+  const post=i>=LAUNCH,p=$('dP');p.textContent=post?'PÓS-LANÇAMENTO':'PRÉ-LANÇAMENTO';p.style.fill=post?'var(--signal)':'var(--muted)';
+  const box=$('dialbox');box.setAttribute('aria-valuenow',i);box.setAttribute('aria-valuetext',lab(i));
+  CATS.forEach((c,j)=>{
+    const v=c.raw[i],full=(v-lo)/(hi-lo)*NB;
+    bars[j].forEach((b,k)=>{const on=k+1<=full,part=!on&&k<full;b.style.background=on||part?c.color:'';b.style.opacity=on?1:part?.5:1});
+    const y=c.yoy[i],g=$('gh'+j);
+    if(y==null){g.style.display='none';$('bd'+j).textContent='sem base anual'}
+    else{g.style.display='';g.style.left=((c.raw[i-12]-lo)/(hi-lo)*100)+'%';$('bd'+j).textContent=arrow(y)+' '+pct(y)}
+    $('fa'+j).textContent='índice '+f1(v);
+    $('fb'+j).textContent=y==null?'':'▼ marca = '+lab(i-12)+': '+f1(c.raw[i-12]);
+  });
+  $('story').innerHTML=story(i);
+  playhead(i); drawScatter(i);
+}
+function story(i){
+  const [s,a,f]=CATS,m=lab(i).toUpperCase(),it=f1(D.mounjaro[i]);
+  if(i<YOY0) return `<b>${m}.</b> Início da série. Ainda não há um ano de histórico para comparar, e o interesse pelo Mounjaro é praticamente zero.`;
+  if(i<LAUNCH) return `<b>${m}.</b> Antes do lançamento. Supermercados <b>${pct(s.yoy[i])}</b> e alimentos <b>${pct(a.yoy[i])}</b> contra ${lab(i-12)}. Interesse por Mounjaro: ${it}.`;
+  if(i===LAUNCH) return `<b>${m}. O Mounjaro chega às farmácias.</b> Supermercados ${pct(s.yoy[i])} e alimentos ${pct(a.yoy[i])} contra ${lab(i-12)}. Interesse: ${it}.`;
+  return `<b>${m}.</b> Interesse por Mounjaro em <b>${it}</b>. Supermercados <b>${pct(s.yoy[i])}</b>, alimentos <b>${pct(a.yoy[i])}</b> e farmácia <b>${pct(f.yoy[i])}</b> contra ${lab(i-12)}.`;
+}
+
+/* ---------- linha do tempo ---------- */
+let TL=null;
+$('tlSeg').innerHTML=`<button type="button" data-m="base" aria-pressed="true">Tendência</button><button type="button" data-m="yoy" aria-pressed="false">Variação anual</button>`;
+$('tlSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{tlMode=b.dataset.m;$('tlSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));drawTL()});
+function nice(min,max,n){if(min===max){min-=1;max+=1}const raw=(max-min)/n,p=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/p,st=(m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p,lo=Math.floor(min/st)*st,hi=Math.ceil(max/st)*st,t=[];for(let v=lo;v<=hi+st/2;v+=st)t.push(+v.toFixed(6));return{lo,hi,ticks:t}}
+function drawTL(){
+  const host=$('tl'),W=Math.max(300,host.clientWidth),wide=W>640,H=wide?380:300,m={l:46,r:wide?126:16,t:22,b:26};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b,base=tlMode==='base',x0=base?11:YOY0,x1=N-1,key=base?'base':'yoy',ref=base?100:0;
+  $('tlSub').textContent=base?'Média móvel de 12 meses do volume de vendas (tira os picos de dezembro), com base 100 em abril de 2025, o mês anterior ao lançamento.':'Cada mês contra o mesmo mês do ano anterior. Acima da linha zero o varejo cresce; abaixo, encolhe.';
+  let mn=ref,mx=ref;CATS.forEach(c=>{for(let i=x0;i<=x1;i++){mn=Math.min(mn,c[key][i]);mx=Math.max(mx,c[key][i])}});
+  const sc=nice(mn,mx,5),X=i=>m.l+(i-x0)/(x1-x0)*iw,Y=v=>m.t+(1-(v-sc.lo)/(sc.hi-sc.lo))*ih;
+  let g='';
+  sc.ticks.forEach(t=>{g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${base?t:pct(t).replace('+','')}</text>`});
+  g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${Y(ref)}" y2="${Y(ref)}" stroke="var(--ink2)" stroke-width="1.5"/>`;
+  const k=Math.max(1,Math.ceil(70/(iw/(x1-x0))));for(let i=x1;i>=x0;i-=k)g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${lab(i)}</text>`;
+  const lx=X(LAUNCH);g+=`<rect x="${lx}" y="${m.t}" width="${m.l+iw-lx}" height="${ih}" fill="var(--signal)" opacity=".06"/><line x1="${lx}" x2="${lx}" y1="${m.t}" y2="${m.t+ih}" stroke="var(--signal)" stroke-dasharray="4 3"/><text class="lm" x="${lx+6}" y="${m.t+12}">MOUNJARO CHEGA ÀS FARMÁCIAS</text>`;
+  const ends=[];
+  CATS.forEach(c=>{let d='';for(let i=x0;i<=x1;i++)d+=(d?'L':'M')+X(i).toFixed(1)+' '+Y(c[key][i]).toFixed(1);
+    g+=`<path d="${d}" fill="none" stroke="${c.color}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>`;
+    ends.push({c,y:Y(c[key][x1])});});
+  if(wide){ends.sort((a,b)=>a.y-b.y);for(let i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<15)ends[i].y=ends[i-1].y+15;
+    ends.forEach(e=>{g+=`<circle cx="${m.l+iw+12}" cy="${e.y}" r="4" fill="${e.c.color}"/><text class="k" x="${m.l+iw+22}" y="${e.y+4}">${e.c.short}</text>`})}
+  g+=`<g id="ph"><line id="phl" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink)" stroke-width="1.5"/><rect id="pht" y="${m.t-20}" height="18" rx="4" fill="var(--ink)"/><text id="phx" y="${m.t-7}" text-anchor="middle" style="fill:var(--bg);font:500 11px var(--mono)"></text>${CATS.map((c,j)=>`<circle id="phd${j}" r="5.5" fill="${c.color}" stroke="var(--surface)" stroke-width="2"/>`).join('')}</g>`;
+  g+=`<rect id="tlov" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:col-resize"/>`;
+  host.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Linha do tempo do volume de vendas por categoria">${g}</svg>`;
+  TL={X,Y,x0,x1,key,W,m,iw};
+  const ov=$('tlov'),svg=host.querySelector('svg');let dr=false;
+  const at=e=>{const r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*(W/r.width);return clamp(Math.round(x0+(px-m.l)/iw*(x1-x0)),x0,x1)};
+  ov.addEventListener('pointerdown',e=>{dr=true;ov.setPointerCapture(e.pointerId);stop();goTo(at(e),true)});
+  ov.addEventListener('pointermove',e=>{if(dr)goTo(at(e),true)});
+  ov.addEventListener('pointerup',()=>dr=false);
+  playhead(clamp(Math.round(pos),0,N-1));
+}
+function playhead(i){
+  if(!TL)return;const {X,Y,x0,key}=TL,g=$('ph');if(!g)return;
+  const ok=i>=x0;g.style.display=ok?'':'none';if(!ok)return;
+  const x=X(i);$('phl').setAttribute('x1',x);$('phl').setAttribute('x2',x);
+  const t=$('phx');t.textContent=lab(i);t.setAttribute('x',x);const w=t.getComputedTextLength?t.getComputedTextLength()+14:50;
+  $('pht').setAttribute('x',x-w/2);$('pht').setAttribute('width',w);
+  CATS.forEach((c,j)=>{const d=$('phd'+j);d.setAttribute('cx',x);d.setAttribute('cy',Y(c[key][i]))});
+}
+
+/* ---------- trilha (dispersão) ---------- */
+$('scSeg').innerHTML=CATS.map((c,j)=>`<button type="button" data-j="${j}" aria-pressed="${j===0}">${c.short}</button>`).join('');
+$('scSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{sel=+b.dataset.j;$('scSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));drawScatter(clamp(Math.round(pos),0,N-1))});
+function drawScatter(i){
+  const host=$('sc');if(!host.clientWidth)return;
+  const c=CATS[sel],W=Math.max(300,host.clientWidth),H=W>640?420:320,m={l:52,r:18,t:16,b:44},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const pts=[];for(let k=YOY0;k<N;k++)pts.push({k,x:D.mounjaro[k],y:c.yoy[k]});
+  const sx=nice(0,Math.max(...pts.map(p=>p.x)),5),sy=nice(Math.min(...pts.map(p=>p.y)),Math.max(...pts.map(p=>p.y)),5);
+  const X=v=>m.l+(v-sx.lo)/(sx.hi-sx.lo)*iw,Y=v=>m.t+(1-(v-sy.lo)/(sy.hi-sy.lo))*ih;
+  const n=pts.length,mx=pts.reduce((s,p)=>s+p.x,0)/n,my=pts.reduce((s,p)=>s+p.y,0)/n;let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p.x-mx)*(p.y-my);sxx+=(p.x-mx)**2});const b=sxy/sxx,a0=my-b*mx;
+  let g='';
+  sy.ticks.forEach(t=>{g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${pct(t).replace('+','')}</text>`});
+  if(sy.lo<0&&sy.hi>0)g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--ink2)" stroke-width="1.5"/>`;
+  sx.ticks.forEach(t=>{g+=`<text x="${X(t)}" y="${m.t+ih+18}" text-anchor="middle">${t}</text>`});
+  g+=`<text x="${m.l+iw/2}" y="${H-6}" text-anchor="middle">Interesse de busca por “Mounjaro” no mês (0 a 100)</text>`;
+  g+=`<line x1="${X(sx.lo)}" y1="${Y(a0+b*sx.lo)}" x2="${X(sx.hi)}" y2="${Y(a0+b*sx.hi)}" stroke="var(--ink2)" stroke-width="1.4" stroke-dasharray="5 5"/>`;
+  const seen=pts.filter(p=>p.k<=i);
+  if(seen.length>1)g+=`<path d="${seen.map((p,j)=>(j?'L':'M')+X(p.x).toFixed(1)+' '+Y(p.y).toFixed(1)).join('')}" fill="none" stroke="${c.color}" stroke-width="1.6" stroke-opacity=".55" stroke-linejoin="round"/>`;
+  pts.forEach(p=>{const on=p.k<=i,cur=p.k===i;g+=`<circle class="pt" data-k="${p.k}" cx="${X(p.x)}" cy="${Y(p.y)}" r="${cur?8:on?5.5:4.5}" fill="${on?c.color:'var(--track)'}" stroke="${cur?'var(--signal)':'var(--surface)'}" stroke-width="${cur?3:2}" style="cursor:pointer"/>`});
+  const cp=pts.find(p=>p.k===i);
+  if(cp){const lx=X(cp.x),ly=Y(cp.y),right=lx<m.l+iw*0.7;g+=`<text class="k" x="${lx+(right?14:-14)}" y="${ly-12}" text-anchor="${right?'start':'end'}">${lab(i)}</text>`}
+  host.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Dispersão entre interesse por Mounjaro e variação anual: ${c.key}">${g}</svg><div class="tt" id="sct" hidden></div>`;
+  $('scR').innerHTML=`${c.key}: correlação de <b>${f2(c.r)}</b> em ${n} meses. Linha tracejada = tendência linear. Clique em um ponto para levar o mostrador até aquele mês.`;
+  const tt=$('sct');
+  host.querySelectorAll('.pt').forEach(el=>{const p=pts[+el.dataset.k-YOY0];
+    el.addEventListener('pointerenter',()=>{tt.textContent=`${lab(p.k)} · interesse ${f1(p.x)} · ${pct(p.y)}`;tt.hidden=false;const px=X(p.x),w=tt.offsetWidth;tt.style.left=clamp(px-w/2,0,W-w)+'px';tt.style.top=(Y(p.y)-38)+'px'});
+    el.addEventListener('pointerleave',()=>tt.hidden=true);
+    el.addEventListener('click',()=>{stop();goTo(p.k)});});
+}
+
+/* ---------- achados e tabela ---------- */
+$('big').innerHTML=CATS.map(c=>`<div class="bt"><div class="n" style="color:var(--ink)">${pct(c.cmp)}</div><div class="d"><span class="sq" style="background:${c.color};display:inline-block;margin-right:6px"></span>${c.key}: volume de mai–dez/2025 contra o mesmo período de 2024</div><div class="r">correlação com o interesse (var. anual): ${f2(c.r)}</div></div>`).join('');
+(function(){const rows=[];for(let i=0;i<N;i++)rows.push(`<tr><td>${lab(i)}</td>${CATS.map(c=>`<td>${f1(c.raw[i])}</td>`).join('')}${CATS.map(c=>`<td>${c.yoy[i]==null?'–':pct(c.yoy[i])}</td>`).join('')}<td>${f1(D.mounjaro[i])}</td><td>${f1(D.caneta[i])}</td></tr>`);
+$('tbl').innerHTML=`<thead><tr><th>Mês</th>${CATS.map(c=>`<th>${c.short} (índice)</th>`).join('')}${CATS.map(c=>`<th>${c.short} (anual)</th>`).join('')}<th>Interesse Mounjaro</th><th>Interesse caneta emag.</th></tr></thead><tbody>${rows.join('')}</tbody>`})();
+
+function all(){drawTL();render()}
+all();
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(all,120)}).observe(document.querySelector('.wrap'));
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawTL();playhead(clamp(Math.round(pos),0,N-1))});
+</script>
+
+</body>
+</html>

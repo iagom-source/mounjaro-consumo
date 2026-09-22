@@ -1,6 +1,6 @@
 # Consumo x Mounjaro: o varejo de alimentos mudou depois das canetas emagrecedoras?
 
-Análise de tendência agregada com SQL Server + Power BI, usando dados públicos.
+Análise de tendência agregada com SQL Server e um dashboard interativo (HTML/SVG), usando dados públicos.
 
 ## Pergunta de negócio
 A popularização das canetas emagrecedoras (Mounjaro chegou às farmácias brasileiras em **maio/2025**) coincide com mudanças no volume de vendas do varejo de alimentos e supermercados?

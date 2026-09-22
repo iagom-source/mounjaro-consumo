@@ -6,3 +6,7 @@ desktop.ini
 # Power BI: arquivos temporários de cache (o .pbix em si deve ser versionado)
 *.pbix.bak
 ~$*.pbix
+
+# Material fora do repositório público (mantido só localmente)
+/posts/
+/powerbi/

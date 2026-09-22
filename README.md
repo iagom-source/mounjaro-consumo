@@ -20,17 +20,20 @@ Não existe base pública que ligue quem usa Mounjaro ao que essa pessoa compra.
 
 ## Estrutura
 ```
-dados/brutos/   CSVs originais (não alterar)
+dados/brutos/   CSVs/JSON originais (não alterar)
 sql/            scripts numerados, rodar em ordem
-docs/           notas de método e prints do dashboard
-posts/          rascunhos dos posts do LinkedIn
+docs/           notas de método
+dashboard/      dashboard interativo (HTML/SVG), publicado via GitHub Pages
 ```
 
 ## Ordem de execução (SQL Server)
 1. `sql/01_criar_banco_e_tabelas.sql`: banco, staging, dimensões e fatos
 2. `sql/02_carga_e_tratamento.sql`: importa os CSVs e popula o modelo
 3. `sql/03_analises.sql`: variações, média móvel, pré/pós lançamento e correlação
-4. Power BI: conectar no banco `ConsumoMounjaro` e usar as views `vw_*`
+
+## Dashboard
+Versão interativa publicada em:
+https://iagom-source.github.io/mounjaro-consumo/dashboard/index.html
 
 ## Limitações
 - Correlação não é causalidade: inflação, juros, renda e sazonalidade também afetam o varejo.

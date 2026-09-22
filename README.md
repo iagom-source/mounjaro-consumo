@@ -22,7 +22,6 @@ Não existe base pública que ligue quem usa Mounjaro ao que essa pessoa compra.
 ```
 dados/brutos/   CSVs/JSON originais (não alterar)
 sql/            scripts numerados, rodar em ordem
-docs/           notas de método
 dashboard/      dashboard interativo (HTML/SVG), publicado via GitHub Pages
 ```
 
